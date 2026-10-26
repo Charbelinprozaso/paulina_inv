@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Salimos?</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#fdf6f0; --card:#ffffff; --text:#2b2a33; --muted:#6f6b7a;
+  --accent:#e8765f; --accent-ink:#ffffff; --line:#eadfd6; --sel:#fde4dc;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1c1a22; --card:#27242f; --text:#f3eff7; --muted:#a7a1b5;
+    --accent:#f08a73; --accent-ink:#1c1a22; --line:#3a3647; --sel:#44302f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1c1a22; --card:#27242f; --text:#f3eff7; --muted:#a7a1b5;
+  --accent:#f08a73; --accent-ink:#1c1a22; --line:#3a3647; --sel:#44302f;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  min-height:100vh;display:flex;justify-content:center;padding:24px 16px 40px;
+}
+main{width:100%;max-width:460px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:0 8px 30px rgba(0,0,0,.06)}
+.step{display:none;animation:in .35s ease}
+.step.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:1.7rem;margin:0 0 8px;line-height:1.2}
+h2{font-size:1.25rem;margin:0 0 6px}
+p{color:var(--muted);margin:0 0 18px;line-height:1.5}
+.emoji{font-size:2.6rem;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.opt{
+  font:inherit;color:var(--text);background:var(--card);border:2px solid var(--line);
+  border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;line-height:1.3;
+  transition:border-color .15s,background .15s,transform .1s;
+}
+.opt:hover{border-color:var(--accent)}
+.opt:active{transform:scale(.97)}
+.opt.sel{border-color:var(--accent);background:var(--sel)}
+.opt small{display:block;color:var(--muted);font-size:.78rem}
+.opt .ic{font-size:1.5rem;display:block;margin-bottom:2px}
+.btn{
+  font:inherit;font-weight:600;background:var(--accent);color:var(--accent-ink);border:0;
+  border-radius:999px;padding:13px 22px;cursor:pointer;width:100%;font-size:1rem;
+  text-decoration:none;display:block;text-align:center;
+}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);margin-top:10px}
+.back{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;margin-bottom:12px;padding:0}
+input[type=date],input[type=text]{
+  font:inherit;width:100%;padding:11px 12px;border-radius:12px;border:2px solid var(--line);
+  background:var(--card);color:var(--text);margin-bottom:18px;color-scheme:light dark;
+}
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:18px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.summary{background:var(--sel);border-radius:14px;padding:14px 16px;margin-bottom:18px;line-height:1.7}
+.hint{font-size:.82rem;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>
+  <div class="card">
+
+    <section class="step on" id="s0">
+      <div class="emoji">✨</div>
+      <h1 id="hola">Holaaa</h1>
+      <p>Te hice esto para ver qué día saliamos y ver si tal vez querías hacer algo en específico</p>
+      <button class="btn" onclick="go(1)">Ver opciones</button>
+    </section>
+
+    <section class="step" id="s1">
+      <button class="back" onclick="go(0)">← Atrás</button>
+      <h2>¿Qué día te parece?</h2>
+      <p>Elige el que mejor te quede.</p>
+      <div class="grid" id="days"></div>
+      <input type="date" id="otroDia" aria-label="Otro día">
+      <button class="btn" id="n1" disabled onclick="go(2)">Siguiente</button>
+    </section>
+
+    <section class="step" id="s2">
+      <button class="back" onclick="go(1)">← Atrás</button>
+      <h2>¿Qué se te antoja hacer?</h2>
+      <p>Elige una opción.</p>
+      <div class="grid" id="acts"></div>
+      <input type="text" id="otraAct" placeholder="O propón algo distinto…" maxlength="80">
+      <h2 style="margin-top:4px">¿A qué hora?</h2>
+      <div class="grid" id="hours" style="margin-top:10px"></div>
+      <button class="btn" id="n2" disabled onclick="go(3)">Siguiente</button>
+    </section>
+
+    <section class="step" id="s3">
+      <button class="back" onclick="go(2)">← Atrás</button>
+      <div class="emoji">🎉</div>
+      <h2>¡Perfecto!</h2>
+      <p>Esto fue lo que elegiste:</p>
+      <div class="summary" id="sum"></div>
+      <button class="btn" id="confirm">Confirmar plan</button>
+      <a class="btn" id="wa" target="_blank" rel="noopener" style="display:none">Confirmar por WhatsApp</a>
+      <button class="btn ghost" id="copy" style="display:none">Copiar mensaje</button>
+      <p class="hint" id="copied"></p>
+    </section>
+
+  </div>
+</main>
+
+<script>
+var TU_NUMERO = "525574320660"; // lada país + número, sin + ni espacios. Ej: 525512345678
+var CALLMEBOT_KEY = "";         // tu apikey de CallMeBot (te llega por WhatsApp al activarlo)
+var SU_NOMBRE = "Paulina";             // opcional, ej: "Ana"
+/* ======================== */
+
+var ACTIVIDADES = [
+  ["☕","Café y plática"],["🎬","Cine"],["🍕","Comer algo rico"],["🌳","Paseo al aire libre"],
+  ["🏛️","Museo o exposición"],["🎮","Videojuegos / juegos de mesa"]
+];
+var HORAS = [["🌤️","Tarde","3–5 pm"],["🌇","Atardecer","5–7 pm"],["🌙","Noche","7–9 pm"]];
+var estado = {dia:"",act:"",hora:""};
+var NOMBRE_DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+var MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+document.getElementById("hola").textContent = SU_NOMBRE ? "Hola, " + SU_NOMBRE : "Hola";
+
+function fmt(d){ return NOMBRE_DIAS[d.getDay()] + " " + d.getDate() + " de " + MESES[d.getMonth()]; }
+
+function mk(parent, html, cls, fn){
+  var b = document.createElement("button");
+  b.className = cls; b.innerHTML = html; b.onclick = fn; parent.appendChild(b); return b;
+}
+function pick(container, btn){
+  container.querySelectorAll(".opt").forEach(function(x){x.classList.remove("sel")});
+  btn.classList.add("sel");
+}
+
+/* días: próximos 6 a partir de mañana */
+var daysEl = document.getElementById("days");
+for(var i=1;i<=6;i++){
+  (function(i){
+    var d = new Date(); d.setDate(d.getDate()+i);
+    var txt = fmt(d);
+    var b = mk(daysEl, "<b>"+NOMBRE_DIAS[d.getDay()]+"</b><small>"+d.getDate()+" de "+MESES[d.getMonth()]+"</small>", "opt", function(){
+      pick(daysEl,b); document.getElementById("otroDia").value=""; estado.dia=txt; check();
+    });
+  })(i);
+}
+document.getElementById("otroDia").addEventListener("change", function(e){
+  if(!e.target.value) return;
+  var p = e.target.value.split("-");
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  daysEl.querySelectorAll(".opt").forEach(function(x){x.classList.remove("sel")});
+  estado.dia = fmt(d); check();
+});
+
+/* actividades */
+var actsEl = document.getElementById("acts");
+ACTIVIDADES.forEach(function(a){
+  var b = mk(actsEl, '<span class="ic">'+a[0]+'</span>'+a[1], "opt", function(){
+    pick(actsEl,b); document.getElementById("otraAct").value=""; estado.act=a[1]; check();
+  });
+});
+document.getElementById("otraAct").addEventListener("input", function(e){
+  actsEl.querySelectorAll(".opt").forEach(function(x){x.classList.remove("sel")});
+  estado.act = e.target.value.trim(); check();
+});
+
+/* horas */
+var hoursEl = document.getElementById("hours");
+HORAS.forEach(function(h){
+  var b = mk(hoursEl, '<span class="ic">'+h[0]+'</span>'+h[1]+'<small>'+h[2]+'</small>', "opt", function(){
+    pick(hoursEl,b); estado.hora=h[1].toLowerCase()+" ("+h[2]+")"; check();
+  });
+});
+
+function check(){
+  document.getElementById("n1").disabled = !estado.dia;
+  document.getElementById("n2").disabled = !(estado.act && estado.hora);
+}
+
+function go(n){
+  document.querySelectorAll(".step").forEach(function(s,i){ s.classList.toggle("on", i===n); });
+  document.querySelectorAll("#dots i").forEach(function(d,i){ d.classList.toggle("on", i<=n); });
+  if(n===3) resumen();
+  window.scrollTo(0,0);
+}
+
+function resumen(){
+  document.getElementById("sum").innerHTML =
+    "📅 <b>"+estado.dia+"</b><br>🕒 "+estado.hora+"<br>📍 "+escapeHtml(estado.act);
+  var quien = SU_NOMBRE ? SU_NOMBRE : "Ella";
+  var msg = "¡Plan confirmado! " + quien + " eligió: " + estado.dia + ", en la " + estado.hora +
+            ". Plan: " + estado.act ;
+  var msgParaEl = "Holaaa, ya elegí para salir: " + estado.dia + ", en la " + estado.hora +
+            ". Plan: " + estado.act ;
+  var okNum = TU_NUMERO && TU_NUMERO.indexOf("X")===-1;
+  var conBot = okNum && CALLMEBOT_KEY;
+  var conf = document.getElementById("confirm"), wa = document.getElementById("wa"),
+      cp = document.getElementById("copy"), note = document.getElementById("copied");
+  conf.style.display = conBot ? "block" : "none";
+  conf.disabled = false; conf.textContent = "Confirmar plan"; note.textContent = "";
+  wa.style.display = (!conBot && okNum) ? "block" : "none";
+  cp.style.display = conBot ? "none" : "block";
+  if(okNum) wa.href = "https://wa.me/"+TU_NUMERO+"?text="+encodeURIComponent(msgParaEl);
+
+  conf.onclick = function(){
+    conf.disabled = true; conf.textContent = "Enviando…";
+    var img = new Image();
+    var finish = function(){
+      conf.style.display = "none";
+      note.textContent = "¡Listo! Ya quedó registrado tu plan 🎉";
+    };
+    img.onload = finish; img.onerror = finish; /* la respuesta de la API no es una imagen, pero la petición sí se envía */
+    img.src = "https://api.callmebot.com/whatsapp.php?phone="+encodeURIComponent(TU_NUMERO)+
+              "&text="+encodeURIComponent(msg)+"&apikey="+encodeURIComponent(CALLMEBOT_KEY)+"&_="+Date.now();
+  };
+  cp.onclick = function(){
+    var done = function(){ note.textContent = "Mensaje copiado, mándalo por donde quieras 💬"; };
+    try{ navigator.clipboard.writeText(msgParaEl).then(done, fallback); }catch(e){ fallback(); }
+    function fallback(){
+      var t=document.createElement("textarea"); t.value=msgParaEl; document.body.appendChild(t); t.select();
+      try{document.execCommand("copy");}catch(e){} document.body.removeChild(t); done();
+    }
+  };
+}
+function escapeHtml(s){ return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}); }
+</script>
+</body>
+</html>
