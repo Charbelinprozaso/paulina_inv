@@ -129,7 +129,7 @@ var estado = {dia:"",act:"",hora:""};
 var NOMBRE_DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 var MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 
-document.getElementById("Holaa").textContent = SU_NOMBRE ? "Hola, " + SU_NOMBRE : "Hola";
+document.getElementById("hola").textContent = SU_NOMBRE ? "Hola, " + SU_NOMBRE : "Hola";
 
 function fmt(d){ return NOMBRE_DIAS[d.getDay()] + " " + d.getDate() + " de " + MESES[d.getMonth()]; }
 
@@ -142,7 +142,7 @@ function pick(container, btn){
   btn.classList.add("sel");
 }
 
-/* días: próximos 6 a partir de mañana */
+
 var daysEl = document.getElementById("days");
 for(var i=1;i<=6;i++){
   (function(i){
@@ -161,7 +161,7 @@ document.getElementById("otroDia").addEventListener("change", function(e){
   estado.dia = fmt(d); check();
 });
 
-/* actividades */
+
 var actsEl = document.getElementById("acts");
 ACTIVIDADES.forEach(function(a){
   var b = mk(actsEl, '<span class="ic">'+a[0]+'</span>'+a[1], "opt", function(){
@@ -173,7 +173,6 @@ document.getElementById("otraAct").addEventListener("input", function(e){
   estado.act = e.target.value.trim(); check();
 });
 
-/* horas */
 var hoursEl = document.getElementById("hours");
 HORAS.forEach(function(h){
   var b = mk(hoursEl, '<span class="ic">'+h[0]+'</span>'+h[1]+'<small>'+h[2]+'</small>', "opt", function(){
@@ -218,7 +217,7 @@ function resumen(){
       conf.style.display = "none";
       note.textContent = "¡Listo! Ya quedó registrado tu plan 🎉";
     };
-    img.onload = finish; img.onerror = finish; /* la respuesta de la API no es una imagen, pero la petición sí se envía */
+    img.onload = finish; img.onerror = finish; 
     img.src = "https://api.callmebot.com/whatsapp.php?phone="+encodeURIComponent(TU_NUMERO)+
               "&text="+encodeURIComponent(msg)+"&apikey="+encodeURIComponent(CALLMEBOT_KEY)+"&_="+Date.now();
   };
